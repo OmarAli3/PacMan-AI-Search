@@ -377,7 +377,8 @@ def cornersHeuristic(state, problem):
         minCostCorner=min([(util.manhattanDistance(currentPosition,corner),corner) for corner in unvisitedCorners])
         heuristic+=minCostCorner[0]
         unvisitedCorners.remove(minCostCorner[1])
-    return heuristic**2
+        currentPosition=minCostCorner[1]
+    return heuristic
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
@@ -473,12 +474,16 @@ def foodHeuristic(state, problem):
     currentPosition=state[0]
     unvisitedCorners=[corner for corner in foodGrid.asList() if corner not in state[1]]
     heuristic=0
-    while unvisitedCorners:
-        minCostCorner=min([(util.manhattanDistance(currentPosition,corner),corner) for corner in unvisitedCorners])
-        heuristic+=minCostCorner[0]
-        unvisitedCorners.remove(minCostCorner[1])
-    return heuristic**2
-
+    if not unvisitedCorners:
+        return 0
+    dist=[(util.manhattanDistance(currentPosition,corner),corner) for corner in unvisitedCorners]
+    minCostCorner=min(dist) 
+    heuristic+=minCostCorner[0]
+    dist=[(util.manhattanDistance(minCostCorner[1],corner),corner) for corner in unvisitedCorners]
+    maxCostCorner=max(dist)
+    heuristic+=maxCostCorner[0]
+    return heuristic
+    
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
